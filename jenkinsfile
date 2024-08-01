@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+     stages {
+        stage('Checkout Repositories') {
+            parallel {
+                stage('Checkout Project-Development') {
+                    steps {
+                        dir('Project-Development') {
+                            git branch: 'master', url: 'https://github.com/SucharithaSathupalli01/Project-Development.git'
+                        }
+                    }
+                }
+                stage('Checkout Project-UAT') {
+                    steps {
+                        dir('Project-UAT') {
+                            git branch: 'master', url: 'https://github.com/SucharithaSathupalli01/Project-UAT.git'
+                        }
+                    }
+                }
+                stage('Checkout Project-Production') {
+                    steps {
+                        dir('Project-Production') {
+                            git branch: 'master', url: 'https://github.com/SucharithaSathupalli01/Project-Production.git'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Configure Git User') {
+            steps {
+                echo 'Configuring Git user...'
+                bat '''
+                git config --global user.name "harish"
+                git config --global user.email "harishcloud1810@gmail.com"
+                '''
+                echo 'Git user configured.'
+            }
+        }
+        stage('Commit and Push Changes') {
+            steps {
+                echo 'Committing and pushing changes...'
+                dir('Project-Development') {
+                    bat '''
+                    echo Current directory: %cd%
+                    git status
+                    git add . 
+                    git commit -m "created"
+                    git push origin master
+                    '''
+                }                
+            }
+        }
+    }
+}
